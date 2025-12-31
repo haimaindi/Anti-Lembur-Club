@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anti-Lembur Club: Ultimate OS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-green: #ccff00;
+            --cyber-purple: #8a2be2;
+            --hot-pink: #ff00ff;
+            --deep-dark: #0a0a0a;
+            --panel-bg: #111;
+        }
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--deep-dark);
+            color: white;
+            overflow-x: hidden;
+        }
+        .pop-border { border: 2px solid white; box-shadow: 6px 6px 0px white; transition: all 0.2s; }
+        .pop-border:hover { transform: translate(-2px, -2px); box-shadow: 10px 10px 0px white; }
+        
+        .pop-border-green { border: 2px solid var(--neon-green); box-shadow: 6px 6px 0px var(--neon-green); }
+        .pop-border-purple { border: 2px solid var(--cyber-purple); box-shadow: 6px 6px 0px var(--cyber-purple); }
+        .pop-border-pink { border: 2px solid var(--hot-pink); box-shadow: 6px 6px 0px var(--hot-pink); }
+        .pop-border-red { border: 2px solid #ef4444; box-shadow: 6px 6px 0px #ef4444; }
+
+        .nav-active { background-color: var(--neon-green); color: black; border-color: transparent; }
+        
+        /* Typography for eBook */
+        .prose-custom h1 { font-weight: 800; text-transform: uppercase; margin-bottom: 0.5em; line-height: 1; }
+        .prose-custom h2 { font-weight: 700; color: var(--neon-green); margin-top: 1.5em; margin-bottom: 0.5em; font-size: 1.5em; }
+        .prose-custom h3 { font-weight: 600; color: white; margin-top: 1.2em; margin-bottom: 0.4em; font-size: 1.2em; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .prose-custom p { margin-bottom: 1em; line-height: 1.7; color: #ccc; text-align: justify; }
+        .prose-custom ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 1.2em; color: #ccc; }
+        .prose-custom li { margin-bottom: 0.5em; }
+        .prose-custom strong { color: white; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade { animation: fadeIn 0.3s ease-in-out; }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+        .ai-glow { box-shadow: 0 0 15px rgba(204, 255, 0, 0.1); }
+
+        /* Sidebar Toggle Classes */
+        #sidebar { transition: transform 0.3s ease-in-out; }
+        @media (max-width: 768px) {
+            #sidebar.closed { transform: translateX(-100%); }
+            #sidebar-overlay.hidden { display: none; }
+        }
+
+        /* AI Output Styling */
+        .ai-formatted-text strong { color: var(--neon-green); font-weight: 700; }
+        .ai-formatted-text em { color: var(--cyber-purple); font-style: italic; }
+        .ai-bullet { color: var(--hot-pink); margin-right: 8px; font-weight: bold; }
+        .ai-highlight-box { border-left: 4px solid var(--neon-green); padding-left: 1rem; margin-top: 1rem; background: rgba(204, 255, 0, 0.05); padding-top: 0.5rem; padding-bottom: 0.5rem; }
+
+        /* Music Player Specifics */
+        .track-active { border-color: var(--neon-green); background: rgba(204, 255, 0, 0.1); color: var(--neon-green); }
+    </style>
+</head>
+<body class="antialiased flex h-screen overflow-hidden">
+
+    <!-- Mobile Header/Toggle -->
+    <div class="md:hidden fixed top-0 left-0 w-full bg-black border-b border-gray-800 p-4 z-40 flex justify-between items-center">
+        <h1 class="text-lg font-black text-[var(--neon-green)]">ALC OS</h1>
+        <button onclick="toggleSidebar()" class="text-white text-2xl focus:outline-none">☰</button>
+    </div>
+
+    <!-- Sidebar Overlay (Mobile) -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 z-30 hidden md:hidden"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed md:relative inset-y-0 left-0 w-64 bg-black border-r border-gray-800 flex flex-col py-6 shrink-0 z-40 closed md:transform-none">
+        <div class="px-6 mb-8 text-center flex flex-col items-center">
+            <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-[var(--neon-green)] mb-4 p-1">
+                <img src="https://lh3.googleusercontent.com/d/1DrGOVDFdXv24Ac2z2t49pZUH-evReTxV" alt="App Icon" class="w-full h-full object-cover rounded-full">
+            </div>
+            <h1 class="text-xl font-black tracking-tight leading-none uppercase">ANTI-LEMBUR<br><span class="text-[var(--neon-green)]">CLUB</span></h1>
+        </div>
+        
+        <nav class="flex-grow space-y-2 px-2 overflow-y-auto">
+            <button onclick="switchTab('ebook')" class="nav-item w-full flex items-center p-3 rounded hover:bg-white/10 transition-colors nav-active text-left" data-id="ebook">
+                <span class="text-2xl mr-3">📖</span> <span class="font-bold text-sm">Tips Jitu</span>
+            </button>
+            <button onclick="switchTab('matrix')" class="nav-item w-full flex items-center p-3 rounded hover:bg-white/10 transition-colors text-left" data-id="matrix">
+                <span class="text-2xl mr-3">⚖️</span> <span class="font-bold text-sm">Matriks Prioritas</span>
+            </button>
+            <button onclick="switchTab('focus')" class="nav-item w-full flex items-center p-3 rounded hover:bg-white/10 transition-colors text-left" data-id="focus">
+                <span class="text-2xl mr-3">⚡</span> <span class="font-bold text-sm">Deep Work Hub</span>
+            </button>
+            <button onclick="switchTab('scripts')" class="nav-item w-full flex items-center p-3 rounded hover:bg-white/10 transition-colors text-left" data-id="scripts">
+                <span class="text-2xl mr-3">💬</span> <span class="font-bold text-sm">Script Lab Pro</span>
+            </button>
+            <button onclick="switchTab('daily')" class="nav-item w-full flex items-center p-3 rounded hover:bg-white/10 transition-colors text-left" data-id="daily">
+                <span class="text-2xl mr-3">📝</span> <span class="font-bold text-sm">Daily Review</span>
+            </button>
+            <button onclick="switchTab('advisor')" class="nav-item w-full flex items-center p-3 rounded hover:bg-white/10 transition-colors text-left" data-id="advisor">
+                <span class="text-2xl mr-3">🚀</span> <span class="font-bold text-sm">Career Advisor</span>
+            </button>
+        </nav>
+
+        <div class="px-4 mt-auto">
+            <p class="text-[10px] text-gray-600 text-center mt-2" id="user-status">Mode Syncing...</p>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-grow bg-[#111] overflow-y-auto p-4 md:p-8 pt-20 md:pt-8 relative">
+        
+        <!-- 1. EBOOK & AI MENTOR SECTION -->
+        <section id="ebook" class="tab-content max-w-4xl mx-auto pb-20 animate-fade">
+            <div class="bg-zinc-900 border-2 border-[var(--cyber-purple)] p-6 mb-12 shadow-[0_0_20px_rgba(138,43,226,0.2)]">
+                <div class="flex items-center mb-4">
+                    <span class="text-3xl mr-3">🤖</span>
+                    <div>
+                        <h2 class="text-xl font-bold text-[var(--cyber-purple)] uppercase tracking-wider m-0">AI MENTOR PRIBADI</h2>
+                        <p class="text-xs text-gray-400">Tanyakan apa saja tentang dinamika kantor.</p>
+                    </div>
+                </div>
+                <div class="flex gap-2 mb-4">
+                    <input type="text" id="ai-input" placeholder="Tulis keluhan Anda (Gaji, Atasan, Burnout)..." 
+                           class="flex-grow bg-black border border-gray-700 p-3 text-white focus:border-[var(--cyber-purple)] outline-none rounded-sm">
+                    <button onclick="askAI()" class="bg-[var(--cyber-purple)] text-white font-bold px-6 py-3 hover:bg-purple-600 transition-all">ANALYZE</button>
+                </div>
+                <div id="ai-response-area" class="hidden bg-black/50 p-6 border-l-4 border-white">
+                    <div id="ai-response-text" class="ai-formatted-text text-gray-200 text-sm leading-loose"></div>
+                </div>
+            </div>
+
+            <div class="pop-border bg-black p-8 mb-8">
+                <h1 class="text-4xl md:text-6xl font-black mb-4 tracking-tighter">THE ANTI-LEMBUR<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--neon-green)] to-[var(--cyber-purple)]">TIPS JITU</span></h1>
+                <p class="text-xl text-gray-300 font-medium">Manifesto Utama: Produktivitas adalah Perlawanan.</p>
+            </div>
+
+            <div class="space-y-12 prose-custom">
+                <!-- BAB 1 -->
+                <article class="bg-zinc-900 border-l-4 border-[var(--hot-pink)] p-8 shadow-lg">
+                    <span class="text-xs font-bold text-[var(--hot-pink)] uppercase tracking-widest bg-black px-2 py-1">BAB 1: PSIKOLOGI KERJA RADIKAL</span>
+                    <h2>Menghancurkan Rantai "Busy-ness Culture"</h2>
+                    <p>Dalam ekonomi perhatian saat ini, menjadi 'sibuk' adalah status simbol yang salah. Anda harus menyadari bahwa <strong>Sibuk ≠ Produktif</strong>. Kebanyakan orang menghabiskan 80% waktu mereka untuk hal-hal yang hanya memberikan 20% hasil.</p>
+                    <h3>1.1 Hukum Pareto dalam Karir</h3>
+                    <p>Identifikasi 2 tugas utama yang memberikan dampak nyata bagi performa Anda. Abaikan sisanya hingga tugas utama selesai. Jika Anda tidak menentukan prioritas, orang lain (atasan/rekan) yang akan menentukannya untuk Anda.</p>
+                    <h3>1.2 Hukum Parkinson</h3>
+                    <p>"Pekerjaan akan berkembang memenuhi waktu yang tersedia untuk penyelesaiannya." Jika Anda memberi waktu 8 jam untuk laporan, itu akan selesai dalam 8 jam. Jika Anda hanya memberi 2 jam sebelum janji makan siang, keajaiban fokus akan terjadi dan laporan itu akan selesai dalam 2 jam.</p>
+                </article>
+
+                <!-- BAB 2 -->
+                <article class="bg-zinc-900 border-l-4 border-[var(--neon-green)] p-8 shadow-lg">
+                    <span class="text-xs font-bold text-[var(--neon-green)] uppercase tracking-widest bg-black px-2 py-1">BAB 2: CORPORATE DIPLOMACY</span>
+                    <h2>Seni Negosiasi Beban Kerja</h2>
+                    <p>Atasan yang toxic seringkali tidak sadar memberikan beban berlebih karena Anda selalu berkata "ya". Mulailah membangun batasan profesional yang sehat tanpa merusak reputasi.</p>
+                    <h3>2.1 Teknik 'The Trade-Off'</h3>
+                    <p>Gunakan logika sumber daya terbatas. Saat tugas baru datang, berikan visualisasi beban kerja Anda sekarang. Mintalah instruksi spesifik: "Antara Proyek Urgent A dan Tugas Baru ini, mana yang harus saya korbankan kecepatannya demi kualitas?"</p>
+                    <h3>2.2 Membangun Otoritas 'Expert'</h3>
+                    <p>Orang yang anti-lembur yang disegani adalah mereka yang hasilnya tak terbantahkan. Tingkatkan skill teknis Anda hingga Anda bisa melakukan dalam 1 jam apa yang orang lain lakukan dalam 4 jam. Itulah kebebasan sejati.</p>
+                </article>
+
+                <!-- BAB 3 -->
+                <article class="bg-zinc-900 border-l-4 border-[var(--cyber-purple)] p-8 shadow-lg">
+                    <span class="text-xs font-bold text-[var(--cyber-purple)] uppercase tracking-widest bg-black px-2 py-1">BAB 3: ENERGI VS MANAJEMEN WAKTU</span>
+                    <h2>Mengapa Waktu Saja Tidak Cukup</h2>
+                    <p>Mengelola waktu adalah konsep usang. Kelola <strong>Energi</strong> Anda. Menghabiskan 1 jam bekerja saat otak sedang segar (Peak Hours) jauh lebih berharga daripada 5 jam bekerja saat kelelahan di malam hari.</p>
+                    <h3>3.1 Chronotypes: Kenali Ritme Anda</h3>
+                    <p>Apakah Anda burung hantu atau burung pagi? Jangan melawan biologi Anda. Kerjakan tugas berat saat energi puncak, dan simpan tugas administratif (balas email, filing) untuk saat energi drop.</p>
+                    <h3>3.2 Ritual Deep Work</h3>
+                    <p>Tanpa gangguan sama sekali. Tanpa handphone. Tanpa tab browser yang tidak perlu. Latih otak Anda untuk fokus mendalam selama 90 menit tanpa interupsi. Ini adalah 'superpower' di abad ke-21.</p>
+                </article>
+
+                <!-- BAB 4 -->
+                <article class="bg-zinc-900 border-l-4 border-white p-8 shadow-lg">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest bg-black px-2 py-1">BAB 4: DIGITAL MINIMALISM AT WORK</span>
+                    <h2>Membersihkan Kebisingan Digital</h2>
+                    <p>Email dan Slack adalah musuh utama fokus jika tidak dikelola. Kebanyakan notifikasi bukanlah urgensi, melainkan interupsi yang merusak alur berpikir mendalam.</p>
+                    <h3>4.1 Kebijakan "Asynchronous Communication"</h3>
+                    <p>Ajarkan rekan kerja Anda bahwa Anda tidak selalu tersedia secara instan. Matikan notifikasi pop-up. Periksa pesan hanya pada waktu-waktu tertentu (contoh: Pukul 11:00 dan 16:00). Berikan hasil berkualitas, bukan balasan cepat yang dangkal.</p>
+                    <h3>4.2 Tooling Overload</h3>
+                    <p>Jangan gunakan terlalu banyak aplikasi produktivitas. Fokus pada satu sistem yang solid. Terlalu banyak alat justru menciptakan beban kognitif tambahan untuk mengelolanya.</p>
+                </article>
+
+                <!-- BAB 5 -->
+                <article class="bg-zinc-900 border-l-4 border-yellow-500 p-8 shadow-lg">
+                    <span class="text-xs font-bold text-yellow-500 uppercase tracking-widest bg-black px-2 py-1">BAB 5: THE ART OF DETACHMENT</span>
+                    <h2>Seni Memutuskan Hubungan Setelah Pukul 17:00</h2>
+                    <p>Kemampuan untuk berhenti memikirkan pekerjaan setelah jam kantor adalah kunci kesehatan mental jangka panjang. Tanpa pemulihan total, performa Anda akan menurun drastis.</p>
+                    <h3>5.1 Ritual Penutup Hari (Shutdown Ritual)</h3>
+                    <p>Tuliskan semua tugas yang belum selesai untuk besok. Katakan pada diri sendiri secara vokal: "Pekerjaan selesai untuk hari ini." Ini memberi sinyal pada otak bawah sadar untuk berhenti memproses masalah kantor.</p>
+                    <h3>5.2 Membangun Identitas di Luar Kantor</h3>
+                    <p>Jika hidup Anda hanya tentang pekerjaan, maka kegagalan di kantor akan terasa seperti kegagalan hidup. Miliki hobi, komunitas, atau proyek sampingan yang membuat Anda merasa berharga tanpa gelar jabatan Anda.</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- 2. MATRIX SECTION -->
+        <section id="matrix" class="tab-content hidden h-full flex flex-col animate-fade">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4">
+                <div>
+                    <h2 class="text-3xl font-black uppercase">Matriks <span class="text-[var(--neon-green)]">Prioritas</span></h2>
+                    <p class="text-gray-400 text-sm">Analisis strategis AI berdasarkan beban kerja Anda.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="downloadMatrix()" class="bg-zinc-800 text-white border border-gray-600 px-4 py-2 font-bold text-sm hover:bg-white hover:text-black transition-all">
+                        📥 Download List
+                    </button>
+                    <button onclick="analyzeMatrixComprehensive()" class="bg-zinc-800 text-[var(--hot-pink)] border border-[var(--hot-pink)] px-4 py-2 font-bold text-sm hover:bg-[var(--hot-pink)] hover:text-black transition-all">
+                        🤖 AI Coach Analysis
+                    </button>
+                    <button onclick="openTaskModal()" class="bg-white text-black px-4 py-2 font-bold text-sm border-2 border-white hover:bg-transparent hover:text-white transition-all">
+                        + Tambah Tugas
+                    </button>
+                </div>
+            </div>
+
+            <div id="matrix-ai-container" class="hidden mb-6 bg-zinc-900 border-2 border-[var(--neon-green)] p-6 animate-fade">
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="font-bold text-[var(--neon-green)] flex items-center gap-2">✨ AI STRATEGIC COACHING</h4>
+                    <button onclick="this.parentElement.parentElement.classList.add('hidden')" class="text-xs text-gray-500 hover:text-white">CLOSE [X]</button>
+                </div>
+                <div id="matrix-ai-content" class="ai-formatted-text text-sm leading-relaxed text-gray-300 italic"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow overflow-y-auto pb-20">
+                <div class="bg-[#1a1a1a] p-4 border-t-4 border-red-500 min-h-[200px] flex flex-col">
+                    <h3 class="font-bold text-red-500 text-xs uppercase mb-3 flex justify-between">1. Do Now <span id="count-q1" class="bg-red-500/20 px-2 rounded font-bold">0</span></h3>
+                    <ul id="list-q1" class="space-y-2 flex-grow"></ul>
+                </div>
+                <div class="bg-[#1a1a1a] p-4 border-t-4 border-blue-500 min-h-[200px] flex flex-col">
+                    <h3 class="font-bold text-blue-500 text-xs uppercase mb-3 flex justify-between">2. Schedule <span id="count-q2" class="bg-blue-500/20 px-2 rounded font-bold">0</span></h3>
+                    <ul id="list-q2" class="space-y-2 flex-grow"></ul>
+                </div>
+                <div class="bg-[#1a1a1a] p-4 border-t-4 border-orange-500 min-h-[200px] flex flex-col">
+                    <h3 class="font-bold text-orange-500 text-xs uppercase mb-3 flex justify-between">3. Delegate <span id="count-q3" class="bg-orange-500/20 px-2 rounded font-bold">0</span></h3>
+                    <ul id="list-q3" class="space-y-2 flex-grow"></ul>
+                </div>
+                <div class="bg-[#1a1a1a] p-4 border-t-4 border-gray-500 min-h-[200px] flex flex-col">
+                    <h3 class="font-bold text-gray-500 text-xs uppercase mb-3 flex justify-between">4. Eliminate <span id="count-q4" class="bg-gray-500/20 px-2 rounded font-bold">0</span></h3>
+                    <ul id="list-q4" class="space-y-2 flex-grow"></ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. DEEP WORK HUB (TIMER & MUSIC) -->
+        <section id="focus" class="tab-content hidden flex flex-col items-center py-10 animate-fade">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-6xl">
+                <!-- Pomodoro Timer -->
+                <div class="pop-border-purple bg-black p-10 text-center relative overflow-hidden flex flex-col justify-center">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-[var(--cyber-purple)]" id="timer-progress"></div>
+                    <h2 class="text-[var(--cyber-purple)] font-bold text-sm uppercase tracking-[0.5em] mb-8">Focus Timer</h2>
+                    <div class="text-8xl font-black font-mono mb-8 tabular-nums tracking-tighter" id="timer-display">25:00</div>
+                    <div class="flex gap-4 justify-center">
+                        <button id="btn-timer" onclick="toggleTimer()" class="bg-[var(--cyber-purple)] text-white px-8 py-4 font-bold text-xl hover:scale-105 transition-transform">START</button>
+                        <button onclick="resetTimer()" class="bg-transparent border border-gray-600 text-gray-400 px-6 py-4 font-bold text-xl hover:text-white">RESET</button>
+                    </div>
+                </div>
+
+                <!-- Cyber-Acoustic Radio (Music Player) -->
+                <div class="pop-border-green bg-black p-8 flex flex-col">
+                    <h2 class="text-[var(--neon-green)] font-bold text-sm uppercase tracking-[0.3em] mb-6 flex items-center justify-between">
+                        Cyber-Acoustic Radio
+                        <span class="animate-pulse text-[10px] bg-[var(--neon-green)] text-black px-2 py-0.5 rounded-full">LIVE FEED</span>
+                    </h2>
+                    
+                    <div class="flex-grow space-y-2 mb-6 overflow-y-auto max-h-[250px] pr-2" id="playlist-container">
+                        <!-- Playlist will be generated by JS -->
+                    </div>
+
+                    <div class="bg-zinc-900 p-4 border border-gray-800 flex items-center gap-4">
+                        <div id="music-status-icon" class="text-2xl">🔇</div>
+                        <div class="flex-grow">
+                            <div class="text-[10px] uppercase font-bold text-gray-500" id="current-track-label">Station Offline</div>
+                            <div class="text-xs font-bold truncate" id="current-track-title">Pilih frekuensi di atas...</div>
+                        </div>
+                        <button onclick="toggleMusicPlayback()" id="music-main-btn" class="w-10 h-10 rounded-full border border-gray-600 flex items-center justify-center hover:border-[var(--neon-green)] hover:text-[var(--neon-green)] transition-all">
+                            ▶
+                        </button>
+                    </div>
+                    <!-- Ditambahkan 'loop' attribute agar musik auto repeat -->
+                    <audio id="audio-player" class="hidden" loop></audio>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. SCRIPT LAB SECTION -->
+        <section id="scripts" class="tab-content hidden max-w-4xl mx-auto animate-fade">
+            <div class="mb-8 text-center">
+                <h2 class="text-3xl font-black uppercase">Script Lab <span class="text-[var(--hot-pink)]">Pro</span></h2>
+                <p class="text-gray-400">Dapatkan skrip percakapan langsung tanpa basa-basi.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-zinc-900 p-6 border border-gray-800 h-fit space-y-4">
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">Target</label>
+                        <select id="script-target" class="w-full bg-black border border-gray-700 p-2 text-sm rounded outline-none">
+                            <option value="boss">Atasan / Bos</option>
+                            <option value="client">Klien</option>
+                            <option value="coworker">Rekan Kerja</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">Tone</label>
+                        <select id="script-tone" class="w-full bg-black border border-gray-700 p-2 text-sm rounded outline-none">
+                            <option value="polite">Diplomatis & Sopan</option>
+                            <option value="firm">Tegas & Berbasis Data</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">Situasi Spesifik</label>
+                        <textarea id="script-context" class="w-full bg-black border border-gray-700 p-2 text-sm rounded outline-none h-24" placeholder="Jelaskan masalah Anda secara spesifik..."></textarea>
+                    </div>
+                    <button onclick="generateScriptAI()" id="script-btn" class="w-full bg-[var(--hot-pink)] text-black font-bold py-3 mt-2">✨ GENERATE RESPONSE</button>
+                </div>
+                <div class="md:col-span-2">
+                    <div class="pop-border-pink bg-black p-8 relative min-h-[300px] flex flex-col">
+                        <div id="script-output" class="ai-formatted-text text-lg font-medium text-gray-300 leading-relaxed whitespace-pre-wrap">"Script akan muncul di sini..."</div>
+                        <div class="mt-auto pt-6 flex justify-between items-end">
+                            <button onclick="downloadScript()" class="text-xs font-bold text-gray-500 hover:text-white">📥 SAVE AS TXT</button>
+                            <button onclick="copyScript()" class="text-xs font-bold bg-white/10 px-3 py-2 rounded text-[var(--hot-pink)] hover:bg-white/20 transition-all">📋 COPY SCRIPT</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. DAILY OPS SECTION -->
+        <section id="daily" class="tab-content hidden max-w-4xl mx-auto animate-fade">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-zinc-900 border-t-4 border-[var(--neon-green)] p-6">
+                    <h3 class="font-black text-xl mb-6 uppercase">Daily Reflect</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-[10px] font-bold text-[var(--neon-green)] mb-1">KEMENANGAN HARI INI</label>
+                            <textarea id="review-win" class="w-full bg-black border border-gray-700 p-3 text-sm rounded h-20 outline-none"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-red-500 mb-1">YANG HARUS BERHENTI (STOP)</label>
+                            <textarea id="review-stop" class="w-full bg-black border border-gray-700 p-3 text-sm rounded h-20 outline-none"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-blue-500 mb-1">YANG HARUS LANJUT (CONTINUE)</label>
+                            <textarea id="review-continue" class="w-full bg-black border border-gray-700 p-3 text-sm rounded h-20 outline-none"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-green-500 mb-1">HAL BARU DIMULAI (START)</label>
+                            <textarea id="review-start" class="w-full bg-black border border-gray-700 p-3 text-sm rounded h-20 outline-none"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-zinc-900 border-t-4 border-white p-6 flex flex-col">
+                    <h3 class="font-black text-xl mb-6 flex justify-between">AI FEEDBACK <button onclick="downloadDaily()" class="text-[10px] border border-gray-600 px-2 rounded opacity-50 hover:opacity-100">📥 DOWNLOAD</button></h3>
+                    <div id="daily-ai-feedback" class="ai-formatted-text text-gray-400 italic text-sm leading-relaxed mb-6 whitespace-pre-wrap">Isi refleksi Anda untuk mendapatkan analisis mentor.</div>
+                    <button onclick="analyzeDailyAI()" class="mt-auto w-full bg-white text-black font-bold py-3 uppercase tracking-widest hover:bg-[var(--neon-green)] transition-all">Dapatkan Analisis AI</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. AI CAREER ADVISOR -->
+        <section id="advisor" class="tab-content hidden max-w-4xl mx-auto animate-fade pb-20">
+            <div class="bg-black border-2 border-red-500 p-8 mb-8">
+                <h2 class="text-3xl font-black text-red-500 uppercase mb-2">AI Career Advisor</h2>
+                <p class="text-gray-400 italic">Analisis objektivitas karir Anda secara instan.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-zinc-900 p-6 space-y-4">
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 block mb-1 uppercase">Alasan Utama Pindah</label>
+                        <input type="text" id="adv-reason" class="w-full bg-black border border-gray-700 p-3 text-sm rounded" placeholder="Contoh: Gaji stagnan, Burnout...">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 block mb-1 uppercase">Keuntungan Bertahan (Pros)</label>
+                        <textarea id="adv-pros" class="w-full bg-black border border-gray-700 p-3 text-sm rounded h-20"></textarea>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 block mb-1 uppercase">Kerugian Bertahan (Cons)</label>
+                        <textarea id="adv-cons" class="w-full bg-black border border-gray-700 p-3 text-sm rounded h-20"></textarea>
+                    </div>
+                </div>
+                <div class="bg-zinc-900 p-6 space-y-6">
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 block mb-3 uppercase">Kesiapan Finansial</label>
+                        <select id="adv-finance" class="w-full bg-black border border-gray-700 p-3 text-sm rounded">
+                            <option value="safe">Sangat Siap (> 6 bulan tabungan)</option>
+                            <option value="moderate">Cukup (3 bulan tabungan)</option>
+                            <option value="risk">Beresiko (Tanpa tabungan)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-gray-500 block mb-3 uppercase">Level Burnout</label>
+                        <input type="range" id="adv-burnout" min="1" max="10" class="w-full accent-red-500">
+                    </div>
+                    <button onclick="getCareerAdvice()" class="w-full bg-red-600 text-white font-bold py-4 hover:bg-red-700 shadow-lg transition-all">CONSULT AI ADVISOR</button>
+                </div>
+            </div>
+
+            <div id="career-response" class="hidden pop-border-red bg-zinc-900 p-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-red-500 font-bold flex items-center gap-2">⚡ KEPUTUSAN STRATEGIS</h3>
+                    <button onclick="downloadCareer()" class="text-xs border border-gray-600 px-2 py-1 rounded">📥 EXPORT ADVICE</button>
+                </div>
+                <div id="career-text" class="ai-formatted-text text-sm leading-relaxed whitespace-pre-line text-gray-200"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal -->
+    <div id="task-modal" class="fixed inset-0 bg-black/90 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-zinc-900 border-2 border-white p-6 w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4 uppercase">Tambah Tugas</h3>
+            <input type="text" id="new-task-title" placeholder="Nama Tugas..." class="w-full bg-black border border-gray-600 p-3 mb-4 text-white outline-none">
+            <select id="new-task-quadrant" class="w-full bg-black border border-gray-600 p-3 mb-6 text-white outline-none">
+                <option value="q1">1. Do Now (Penting & Mendesak)</option>
+                <option value="q2">2. Schedule (Penting & Tdk Mendesak)</option>
+                <option value="q3">3. Delegate (Mendesak & Tdk Penting)</option>
+                <option value="q4">4. Eliminate (Tdk Penting & Tdk Mendesak)</option>
+            </select>
+            <div class="flex justify-end gap-3">
+                <button onclick="closeTaskModal()" class="px-4 py-2 text-gray-400">Batal</button>
+                <button onclick="addTask()" class="bg-[var(--neon-green)] text-black px-6 py-2 font-bold">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase & AI Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, addDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'anti-lembur-ultimate-os';
+        const apiKey = ""; 
+
+        let currentUser = null;
+        let tasks = [];
+
+        onAuthStateChanged(auth, async (user) => {
+            currentUser = user;
+            if (user) {
+                document.getElementById('user-status').innerText = `ID: ${user.uid.slice(0,8)}`;
+                onSnapshot(collection(db, 'artifacts', appId, 'users', user.uid, 'tasks'), (snap) => {
+                    tasks = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                    renderTasks();
+                });
+            } else {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
+                else await signInAnonymously(auth);
+            }
+        });
+
+        // --- AI FORMATTER ENGINE ---
+        function formatAIResponse(text) {
+            if (!text) return "";
+            let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            formatted = formatted.replace(/^\s*[-*]\s+(.*)$/gm, '<div class="flex items-start mb-1"><span class="ai-bullet">▶</span><span>$1</span></div>');
+            formatted = formatted.replace(/^\s*(\d+)\.\s+(.*)$/gm, '<div class="flex items-start mb-1"><span class="ai-bullet">$1.</span><span>$2</span></div>');
+            formatted = formatted.replace(/Tips:|Catatan:/gi, (match) => `<span class="bg-[var(--neon-green)] text-black px-1 font-bold rounded-sm">${match}</span>`);
+            return formatted;
+        }
+
+        async function fetchGemini(prompt, systemInstruction = "") {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: { parts: [{ text: systemInstruction }] }
+            };
+            let retries = 5;
+            for(let i=0; i<retries; i++){
+                try {
+                    const res = await fetch(url, { method: 'POST', body: JSON.stringify(payload) });
+                    const data = await res.json();
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Terjadi kesalahan pada respon AI.";
+                } catch(e) {
+                    if(i === retries-1) return "Koneksi terputus. Mohon coba lagi.";
+                    await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
+                }
+            }
+        }
+
+        // --- GLOBAL UTILS ---
+        window.switchTab = (id) => {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('nav-active'));
+            document.querySelector(`[data-id="${id}"]`).classList.add('nav-active');
+            if(window.innerWidth < 768) toggleSidebar();
+        };
+
+        window.toggleSidebar = () => {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('closed');
+            overlay.classList.toggle('hidden');
+        };
+
+        window.downloadFile = (filename, text) => {
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        };
+
+        // --- MATRIX LOGIC ---
+        window.renderTasks = () => {
+            ['q1', 'q2', 'q3', 'q4'].forEach(q => {
+                const list = document.getElementById(`list-${q}`);
+                const filtered = tasks.filter(t => t.quadrant === q);
+                document.getElementById(`count-${q}`).innerText = filtered.length;
+                list.innerHTML = filtered.map(t => `
+                    <li class="bg-black p-2 border border-gray-800 flex justify-between items-center group text-xs">
+                        <span>${t.title}</span>
+                        <button onclick="deleteTask('${t.id}')" class="text-red-500 opacity-0 group-hover:opacity-100 transition-all">×</button>
+                    </li>
+                `).join('');
+            });
+        };
+
+        window.addTask = async () => {
+            const title = document.getElementById('new-task-title').value;
+            const quadrant = document.getElementById('new-task-quadrant').value;
+            if(!title || !currentUser) return;
+            await addDoc(collection(db, 'artifacts', appId, 'users', currentUser.uid, 'tasks'), { title, quadrant, createdAt: Date.now() });
+            document.getElementById('new-task-title').value = '';
+            closeTaskModal();
+        };
+
+        window.deleteTask = async (id) => await deleteDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'tasks', id));
+
+        window.analyzeMatrixComprehensive = async () => {
+            const contentArea = document.getElementById('matrix-ai-content');
+            const container = document.getElementById('matrix-ai-container');
+            container.classList.remove('hidden');
+            contentArea.innerHTML = "Menganalisis strategi beban kerja...";
+            const taskContext = tasks.map(t => `- [${t.quadrant}] ${t.title}`).join('\n');
+            const prompt = `Daftar Tugas Saya:\n${taskContext}\n\nBerikan analisis komprehensif tentang ketimpangan prioritas, saran delegasi, dan langkah taktis agar saya tidak lembur hari ini. Gunakan struktur yang jelas.`;
+            const response = await fetchGemini(prompt, "Anda adalah Executive Productivity Coach. Berikan saran yang cerdas, tajam, dan strategis.");
+            contentArea.innerHTML = formatAIResponse(response);
+        };
+
+        window.downloadMatrix = () => {
+            const q1 = tasks.filter(t => t.quadrant === 'q1').map(t => `- ${t.title}`);
+            const q2 = tasks.filter(t => t.quadrant === 'q2').map(t => `- ${t.title}`);
+            const q3 = tasks.filter(t => t.quadrant === 'q3').map(t => `- ${t.title}`);
+            const q4 = tasks.filter(t => t.quadrant === 'q4').map(t => `- ${t.title}`);
+
+            const text = "DAFTAR TUGAS PRIORITAS - ANTI LEMBUR\n" + 
+                        "DIURUTKAN BERDASARKAN PRIORITAS STRATEGIS\n" +
+                        "----------------------------------------\n\n" + 
+                        "1. DO NOW (PENTING & MENDESAK)\n" + (q1.length ? q1.join('\n') : "(Kosong)") + "\n\n" +
+                        "2. SCHEDULE (PENTING & TIDAK MENDESAK)\n" + (q2.length ? q2.join('\n') : "(Kosong)") + "\n\n" +
+                        "3. DELEGATE (MENDESAK & TIDAK PENTING)\n" + (q3.length ? q3.join('\n') : "(Kosong)") + "\n\n" +
+                        "4. ELIMINATE (TIDAK PENTING & TIDAK MENDESAK)\n" + (q4.length ? q4.join('\n') : "(Kosong)");
+            
+            window.downloadFile("Prioritas_Berdasarkan_Kuadran.txt", text);
+        };
+
+        // --- SCRIPT LAB LOGIC ---
+        window.generateScriptAI = async () => {
+            const target = document.getElementById('script-target').value;
+            const tone = document.getElementById('script-tone').value;
+            const context = document.getElementById('script-context').value;
+            const btn = document.getElementById('script-btn');
+            const output = document.getElementById('script-output');
+            
+            btn.innerText = "Generating...";
+            const prompt = `Konteks: Bicara ke ${target} dengan nada ${tone}. Masalah: ${context}. Berikan script percakapan langsung.`;
+            const response = await fetchGemini(prompt, "Anda adalah Pakar Komunikasi Profesional. JANGAN BERIKAN BASA-BASI atau kalimat pengantar. Langsung berikan script yang bisa di-copy paste.");
+            
+            output.innerHTML = formatAIResponse(response);
+            btn.innerText = "✨ GENERATE RESPONSE";
+        };
+
+        window.downloadScript = () => {
+            const content = document.getElementById('script-output').innerText;
+            window.downloadFile("Script_Komunikasi.txt", content);
+        };
+
+        window.copyScript = () => { 
+            const text = document.getElementById('script-output').innerText;
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = "COPIED!";
+            setTimeout(() => btn.innerText = originalText, 2000);
+        };
+
+        // --- DAILY REVIEW LOGIC ---
+        window.analyzeDailyAI = async () => {
+            const win = document.getElementById('review-win').value;
+            const stop = document.getElementById('review-stop').value;
+            const cont = document.getElementById('review-continue').value;
+            const start = document.getElementById('review-start').value;
+            const display = document.getElementById('daily-ai-feedback');
+            display.innerHTML = "Sedang mengevaluasi hari Anda...";
+            const prompt = `Analisis refleksi ini:\nKemenangan: ${win}\nStop: ${stop}\nContinue: ${cont}\nStart: ${start}. Gunakan struktur poin yang menarik.`;
+            const response = await fetchGemini(prompt, "Anda adalah Mentor Produktivitas. Berikan analisis kritis dan motivasi singkat.");
+            display.innerHTML = formatAIResponse(response);
+        };
+
+        window.downloadDaily = () => {
+            const text = `LAPORAN HARIAN - ANTI LEMBUR\n` +
+                        `------------------------------\n` +
+                        `Pencapaian: ${document.getElementById('review-win').value}\n` +
+                        `Stop: ${document.getElementById('review-stop').value}\n` +
+                        `Continue: ${document.getElementById('review-continue').value}\n` +
+                        `Start: ${document.getElementById('review-start').value}\n\n` +
+                        `AI Feedback:\n${document.getElementById('daily-ai-feedback').innerText}`;
+            window.downloadFile("Review_Harian.txt", text);
+        };
+
+        // --- CAREER ADVISOR LOGIC ---
+        window.getCareerAdvice = async () => {
+            const reason = document.getElementById('adv-reason').value;
+            const pros = document.getElementById('adv-pros').value;
+            const cons = document.getElementById('adv-cons').value;
+            const finance = document.getElementById('adv-finance').value;
+            const burnout = document.getElementById('adv-burnout').value;
+            const display = document.getElementById('career-response');
+            const text = document.getElementById('career-text');
+            display.classList.remove('hidden');
+            text.innerHTML = "Melakukan analisis resiko dan peluang...";
+            const prompt = `Data Karir:\nAlasan: ${reason}\nPros: ${pros}\nCons: ${cons}\nFinance: ${finance}\nBurnout: ${burnout}/10. Berikan saran yang terstruktur dengan Bold dan List.`;
+            const response = await fetchGemini(prompt, "Anda adalah AI Career Strategist. Berikan saran yang sangat objektif: Bertahan, Quiet Quitting, atau Segera Resign. Sertakan langkah mitigasi.");
+            text.innerHTML = formatAIResponse(response);
+        };
+
+        window.downloadCareer = () => {
+            const content = document.getElementById('career-text').innerText;
+            window.downloadFile("Career_Advice_AI.txt", content);
+        };
+
+        // --- MENTOR AI LOGIC ---
+        window.askAI = async () => {
+            const input = document.getElementById('ai-input').value;
+            if(!input) return;
+            const area = document.getElementById('ai-response-area');
+            const text = document.getElementById('ai-response-text');
+            area.classList.remove('hidden');
+            text.innerHTML = "Berpikir...";
+            const response = await fetchGemini(input, "Anda adalah AI Mentor Karir yang tajam dan solutif. Gunakan format Bold dan List agar mudah dibaca.");
+            text.innerHTML = formatAIResponse(response);
+        };
+
+        // --- TIMER LOGIC ---
+        let timerInterval;
+        let timeLeft = 25 * 60;
+        window.toggleTimer = () => {
+            const btn = document.getElementById('btn-timer');
+            if(timerInterval) { clearInterval(timerInterval); timerInterval = null; btn.innerText = "START"; }
+            else {
+                btn.innerText = "PAUSE";
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    const m = Math.floor(timeLeft / 60).toString().padStart(2,'0');
+                    const s = (timeLeft % 60).toString().padStart(2,'0');
+                    document.getElementById('timer-display').innerText = `${m}:${s}`;
+                    document.getElementById('timer-progress').style.width = `${((25*60-timeLeft)/(25*60))*100}%`;
+                    if(timeLeft <= 0) { clearInterval(timerInterval); resetTimer(); }
+                }, 1000);
+            }
+        };
+        window.resetTimer = () => { clearInterval(timerInterval); timerInterval = null; timeLeft = 25 * 60; document.getElementById('timer-display').innerText = "25:00"; document.getElementById('timer-progress').style.width = "0%"; document.getElementById('btn-timer').innerText = "START"; };
+
+        // --- MUSIC PLAYER LOGIC (Enriched) ---
+        const tracks = [
+            { title: "Neon Lofi Study", label: "Lofi", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+            { title: "Deep Space Ambient", label: "Nature", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+            { title: "Synthwave Focus", label: "Synth", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+            { title: "Coffee Shop Jazz", label: "Jazz", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
+            { title: "Cyberpunk Hacker Mode", label: "Dark Synth", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
+            { title: "Rainy Night Focus", label: "Ambient", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3" },
+            { title: "Piano Calm Flow", label: "Classical", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3" },
+            { title: "Zen Garden Peace", label: "Healing", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" }
+        ];
+
+        let currentTrackIdx = null;
+        const audio = document.getElementById('audio-player');
+        const playlistContainer = document.getElementById('playlist-container');
+
+        // Generate Playlist Buttons
+        function generatePlaylist() {
+            playlistContainer.innerHTML = tracks.map((track, idx) => `
+                <button onclick="playTrack(${idx})" class="track-btn w-full p-3 border border-gray-800 text-left text-sm flex justify-between items-center group transition-all" id="track-${idx}">
+                    <span class="flex items-center gap-3">
+                        <span class="text-xs opacity-40">${(idx + 1).toString().padStart(2, '0')}</span>
+                        <span>${track.title}</span>
+                    </span>
+                    <span class="text-[10px] opacity-50 uppercase tracking-widest">${track.label}</span>
+                </button>
+            `).join('');
+        }
+
+        window.playTrack = (idx) => {
+            const btn = document.getElementById('music-main-btn');
+            const statusIcon = document.getElementById('music-status-icon');
+            const trackLabel = document.getElementById('current-track-label');
+            const trackTitle = document.getElementById('current-track-title');
+
+            // UI Update
+            document.querySelectorAll('.track-btn').forEach(b => b.classList.remove('track-active'));
+            document.getElementById(`track-${idx}`).classList.add('track-active');
+
+            if(currentTrackIdx === idx && !audio.paused) {
+                audio.pause();
+                btn.innerText = "▶";
+                statusIcon.innerText = "⏸";
+            } else {
+                currentTrackIdx = idx;
+                audio.src = tracks[idx].url;
+                // Auto repeat sudah aktif via attribute 'loop' di HTML
+                audio.play();
+                btn.innerText = "⏸";
+                statusIcon.innerText = "🎵";
+                trackLabel.innerText = tracks[idx].label + " Station";
+                trackTitle.innerText = tracks[idx].title;
+            }
+        };
+
+        window.toggleMusicPlayback = () => {
+            if(currentTrackIdx === null) {
+                playTrack(0);
+                return;
+            }
+            const btn = document.getElementById('music-main-btn');
+            const statusIcon = document.getElementById('music-status-icon');
+            if(audio.paused) {
+                audio.play();
+                btn.innerText = "⏸";
+                statusIcon.innerText = "🎵";
+            } else {
+                audio.pause();
+                btn.innerText = "▶";
+                statusIcon.innerText = "⏸";
+            }
+        };
+
+        window.openTaskModal = () => document.getElementById('task-modal').classList.remove('hidden');
+        window.closeTaskModal = () => document.getElementById('task-modal').classList.add('hidden');
+
+        // Initialize Playlist on Load
+        window.onload = () => {
+            generatePlaylist();
+        };
+    </script>
+</body>
+</html>
