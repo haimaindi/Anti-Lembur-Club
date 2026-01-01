@@ -109,7 +109,7 @@
         </nav>
 
         <div class="px-4 mt-auto">
-            <p class="text-[10px] text-gray-600 text-center mt-2" id="user-status">Mode Lokal Aktif</p>
+            <p class="text-[10px] text-gray-600 text-center mt-2" id="user-status">Penyimpanan Lokal Aktif</p>
         </div>
     </aside>
 
@@ -204,7 +204,7 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4">
                 <div>
                     <h2 class="text-3xl font-black uppercase">Matriks <span class="text-[var(--neon-green)]">Prioritas</span></h2>
-                    <p class="text-gray-400 text-sm">Data disimpan sementara selama sesi aktif.</p>
+                    <p class="text-gray-400 text-sm">Data disimpan otomatis ke browser Anda.</p>
                 </div>
                 <div class="flex flex-wrap gap-2">
                     <button onclick="downloadMatrix()" class="bg-zinc-800 text-white border border-gray-600 px-4 py-2 font-bold text-sm hover:bg-white hover:text-black transition-all">
@@ -282,7 +282,6 @@
                             ▶
                         </button>
                     </div>
-                    <!-- Ditambahkan 'loop' attribute agar musik auto repeat -->
                     <audio id="audio-player" class="hidden" loop></audio>
                 </div>
             </div>
@@ -292,7 +291,7 @@
         <section id="scripts" class="tab-content hidden max-w-4xl mx-auto animate-fade">
             <div class="mb-8 text-center">
                 <h2 class="text-3xl font-black uppercase">Script Lab <span class="text-[var(--hot-pink)]">Pro</span></h2>
-                <p class="text-gray-400">Dapatkan skrip percakapan langsung tanpa basa-basi.</p>
+                <p class="text-gray-400">Salin skrip percakapan langsung tanpa basa-basi.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="bg-zinc-900 p-6 border border-gray-800 h-fit space-y-4">
@@ -300,8 +299,9 @@
                         <label class="block text-xs text-gray-500 mb-1">Target</label>
                         <select id="script-target" class="w-full bg-black border border-gray-700 p-2 text-sm rounded outline-none">
                             <option value="boss">Atasan / Bos</option>
-                            <option value="client">Klien</option>
                             <option value="coworker">Rekan Kerja</option>
+                            <option value="client">Klien</option>
+                            <option value="external person">Pihak External</option>
                         </select>
                     </div>
                     <div>
@@ -309,11 +309,12 @@
                         <select id="script-tone" class="w-full bg-black border border-gray-700 p-2 text-sm rounded outline-none">
                             <option value="polite">Diplomatis & Sopan</option>
                             <option value="firm">Tegas & Berbasis Data</option>
+                            <option value="casual">Santai Casual</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-xs text-gray-500 mb-1">Situasi Spesifik</label>
-                        <textarea id="script-context" class="w-full bg-black border border-gray-700 p-2 text-sm rounded outline-none h-24" placeholder="Jelaskan masalah Anda secara spesifik..."></textarea>
+                        <textarea id="script-context" oninput="saveInputs()" class="w-full bg-black border border-gray-700 p-2 text-sm rounded outline-none h-24" placeholder="Jelaskan masalah Anda secara spesifik..."></textarea>
                     </div>
                     <button onclick="generateScriptAI()" id="script-btn" class="w-full bg-[var(--hot-pink)] text-black font-bold py-3 mt-2">✨ GENERATE RESPONSE</button>
                 </div>
@@ -337,19 +338,19 @@
                     <div class="space-y-4">
                         <div>
                             <label class="block text-[10px] font-bold text-[var(--neon-green)] mb-1">KEMENANGAN HARI INI</label>
-                            <textarea id="review-win" class="w-full bg-black border border-gray-700 p-3 text-sm rounded h-20 outline-none"></textarea>
+                            <textarea id="review-win" oninput="saveInputs()" class="w-full bg-black border border-gray-700 p-3 text-sm rounded h-20 outline-none"></textarea>
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-red-500 mb-1">YANG HARUS BERHENTI (STOP)</label>
-                            <textarea id="review-stop" class="w-full bg-black border border-gray-700 p-3 text-sm rounded h-20 outline-none"></textarea>
+                            <textarea id="review-stop" oninput="saveInputs()" class="w-full bg-black border border-gray-700 p-3 text-sm rounded h-20 outline-none"></textarea>
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-blue-500 mb-1">YANG HARUS LANJUT (CONTINUE)</label>
-                            <textarea id="review-continue" class="w-full bg-black border border-gray-700 p-3 text-sm rounded h-20 outline-none"></textarea>
+                            <textarea id="review-continue" oninput="saveInputs()" class="w-full bg-black border border-gray-700 p-3 text-sm rounded h-20 outline-none"></textarea>
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-green-500 mb-1">HAL BARU DIMULAI (START)</label>
-                            <textarea id="review-start" class="w-full bg-black border border-gray-700 p-3 text-sm rounded h-20 outline-none"></textarea>
+                            <textarea id="review-start" oninput="saveInputs()" class="w-full bg-black border border-gray-700 p-3 text-sm rounded h-20 outline-none"></textarea>
                         </div>
                     </div>
                 </div>
@@ -372,21 +373,21 @@
                 <div class="bg-zinc-900 p-6 space-y-4">
                     <div>
                         <label class="text-xs font-bold text-gray-500 block mb-1 uppercase">Alasan Utama Pindah</label>
-                        <input type="text" id="adv-reason" class="w-full bg-black border border-gray-700 p-3 text-sm rounded" placeholder="Contoh: Gaji stagnan, Burnout...">
+                        <input type="text" id="adv-reason" oninput="saveInputs()" class="w-full bg-black border border-gray-700 p-3 text-sm rounded" placeholder="Contoh: Gaji stagnan, Burnout...">
                     </div>
                     <div>
                         <label class="text-xs font-bold text-gray-500 block mb-1 uppercase">Keuntungan Bertahan (Pros)</label>
-                        <textarea id="adv-pros" class="w-full bg-black border border-gray-700 p-3 text-sm rounded h-20"></textarea>
+                        <textarea id="adv-pros" oninput="saveInputs()" class="w-full bg-black border border-gray-700 p-3 text-sm rounded h-20"></textarea>
                     </div>
                     <div>
                         <label class="text-xs font-bold text-gray-500 block mb-1 uppercase">Kerugian Bertahan (Cons)</label>
-                        <textarea id="adv-cons" class="w-full bg-black border border-gray-700 p-3 text-sm rounded h-20"></textarea>
+                        <textarea id="adv-cons" oninput="saveInputs()" class="w-full bg-black border border-gray-700 p-3 text-sm rounded h-20"></textarea>
                     </div>
                 </div>
                 <div class="bg-zinc-900 p-6 space-y-6">
                     <div>
                         <label class="text-xs font-bold text-gray-500 block mb-3 uppercase">Kesiapan Finansial</label>
-                        <select id="adv-finance" class="w-full bg-black border border-gray-700 p-3 text-sm rounded">
+                        <select id="adv-finance" onchange="saveInputs()" class="w-full bg-black border border-gray-700 p-3 text-sm rounded">
                             <option value="safe">Sangat Siap (> 6 bulan tabungan)</option>
                             <option value="moderate">Cukup (3 bulan tabungan)</option>
                             <option value="risk">Beresiko (Tanpa tabungan)</option>
@@ -394,7 +395,7 @@
                     </div>
                     <div>
                         <label class="text-xs font-bold text-gray-500 block mb-3 uppercase">Level Burnout</label>
-                        <input type="range" id="adv-burnout" min="1" max="10" class="w-full accent-red-500">
+                        <input type="range" id="adv-burnout" oninput="saveInputs()" min="1" max="10" class="w-full accent-red-500">
                     </div>
                     <button onclick="getCareerAdvice()" class="w-full bg-red-600 text-white font-bold py-4 hover:bg-red-700 shadow-lg transition-all">CONSULT AI ADVISOR</button>
                 </div>
@@ -428,11 +429,60 @@
         </div>
     </div>
 
-    <!-- Logic Script (No Storage, No Firebase) -->
+    <!-- Logic Script (With LocalStorage & Optimized AI Responses) -->
     <script>
-        // Data State (In-memory)
         let tasks = [];
         const apiKey = ""; // removed
+
+        // --- STORAGE UTILS ---
+        const saveToLocal = () => localStorage.setItem('alc_tasks_v2', JSON.stringify(tasks));
+        const loadFromLocal = () => {
+            const stored = localStorage.getItem('alc_tasks_v2');
+            if (stored) tasks = JSON.parse(stored);
+        };
+
+        const saveInputs = () => {
+            const inputs = {
+                review: {
+                    win: document.getElementById('review-win').value,
+                    stop: document.getElementById('review-stop').value,
+                    continue: document.getElementById('review-continue').value,
+                    start: document.getElementById('review-start').value
+                },
+                advisor: {
+                    reason: document.getElementById('adv-reason').value,
+                    pros: document.getElementById('adv-pros').value,
+                    cons: document.getElementById('adv-cons').value,
+                    finance: document.getElementById('adv-finance').value,
+                    burnout: document.getElementById('adv-burnout').value
+                },
+                script: {
+                    context: document.getElementById('script-context').value
+                }
+            };
+            localStorage.setItem('alc_inputs_v2', JSON.stringify(inputs));
+        };
+
+        const loadInputs = () => {
+            const stored = localStorage.getItem('alc_inputs_v2');
+            if (stored) {
+                const data = JSON.parse(stored);
+                if(data.review) {
+                    document.getElementById('review-win').value = data.review.win || '';
+                    document.getElementById('review-stop').value = data.review.stop || '';
+                    document.getElementById('review-continue').value = data.review.continue || '';
+                    document.getElementById('review-start').value = data.review.start || '';
+                }
+                if(data.advisor) {
+                    document.getElementById('adv-reason').value = data.advisor.reason || '';
+                    document.getElementById('adv-pros').value = data.advisor.pros || '';
+                    document.getElementById('adv-cons').value = data.advisor.cons || '';
+                    document.getElementById('adv-finance').value = data.advisor.finance || 'safe';
+                    document.getElementById('adv-burnout').value = data.advisor.burnout || 5;
+                }
+                if(data.script) document.getElementById('script-context').value = data.script.context || '';
+            }
+        };
 
         // --- UI UTILS ---
         window.switchTab = (id) => {
@@ -444,23 +494,19 @@
         };
 
         window.toggleSidebar = () => {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            sidebar.classList.toggle('closed');
-            overlay.classList.toggle('hidden');
+            document.getElementById('sidebar').classList.toggle('closed');
+            document.getElementById('sidebar-overlay').classList.toggle('hidden');
         };
 
         window.downloadFile = (filename, text) => {
             const blob = new Blob([text], { type: 'text/plain' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            a.click();
+            a.href = url; a.download = filename; a.click();
             window.URL.revokeObjectURL(url);
         };
 
-        // --- AI ENGINE (API Only) ---
+        // --- AI ENGINE ---
         function formatAIResponse(text) {
             if (!text) return "";
             let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -480,27 +526,22 @@
             try {
                 const res = await fetch(url, { method: 'POST', body: JSON.stringify(payload) });
                 const data = await res.json();
-                return data.candidates?.[0]?.content?.parts?.[0]?.text || "Terjadi kesalahan pada respon AI.";
-            } catch(e) {
-                return "Koneksi terputus atau API Key tidak tersedia.";
-            }
+                return data.candidates?.[0]?.content?.parts?.[0]?.text || "Terjadi kesalahan.";
+            } catch(e) { return "Koneksi terputus."; }
         }
 
-        // --- MATRIX LOGIC (Local Array) ---
+        // --- MATRIX LOGIC ---
         window.renderTasks = () => {
             ['q1', 'q2', 'q3', 'q4'].forEach(q => {
-                const list = document.getElementById(`list-${q}`);
                 const filtered = tasks.filter(t => t.quadrant === q);
                 document.getElementById(`count-${q}`).innerText = filtered.length;
-                list.innerHTML = filtered.map(t => `
+                document.getElementById(`list-${q}`).innerHTML = filtered.map(t => `
                     <li class="bg-black p-2 border border-gray-800 flex justify-between items-center group text-xs ${t.completed ? 'opacity-50' : ''}">
                         <div class="flex items-center gap-2 overflow-hidden">
-                            <input type="checkbox" ${t.completed ? 'checked' : ''} 
-                                   onclick="toggleTaskStatus('${t.id}')"
-                                   class="w-3 h-3 accent-[var(--neon-green)] cursor-pointer shrink-0">
+                            <input type="checkbox" ${t.completed ? 'checked' : ''} onclick="toggleTaskStatus('${t.id}')" class="w-3 h-3 accent-[var(--neon-green)] shrink-0">
                             <span class="${t.completed ? 'line-through' : ''} truncate">${t.title}</span>
                         </div>
-                        <button onclick="deleteTask('${t.id}')" class="text-red-500 opacity-0 group-hover:opacity-100 transition-all shrink-0">×</button>
+                        <button onclick="deleteTask('${t.id}')" class="text-red-500 opacity-0 group-hover:opacity-100 Transition-all shrink-0">×</button>
                     </li>
                 `).join('');
             });
@@ -510,84 +551,71 @@
             const title = document.getElementById('new-task-title').value;
             const quadrant = document.getElementById('new-task-quadrant').value;
             if(!title) return;
-            const newTask = {
-                id: Date.now().toString(),
-                title,
-                quadrant,
-                completed: false
-            };
-            tasks.push(newTask);
+            tasks.push({ id: Date.now().toString(), title, quadrant, completed: false });
             document.getElementById('new-task-title').value = '';
-            closeTaskModal();
-            renderTasks();
+            closeTaskModal(); saveToLocal(); renderTasks();
         };
 
         window.toggleTaskStatus = (id) => {
             const task = tasks.find(t => t.id === id);
             if(task) task.completed = !task.completed;
-            renderTasks();
+            saveToLocal(); renderTasks();
         };
 
         window.deleteTask = (id) => {
             tasks = tasks.filter(t => t.id !== id);
-            renderTasks();
+            saveToLocal(); renderTasks();
         };
 
         window.analyzeMatrixComprehensive = async () => {
             const contentArea = document.getElementById('matrix-ai-content');
-            const container = document.getElementById('matrix-ai-container');
-            container.classList.remove('hidden');
-            contentArea.innerHTML = "Menganalisis strategi beban kerja...";
+            document.getElementById('matrix-ai-container').classList.remove('hidden');
+            contentArea.innerHTML = "Menganalisis beban kerja...";
             const taskContext = tasks.map(t => `- [${t.quadrant}] ${t.title} (${t.completed ? 'Selesai' : 'Belum'})`).join('\n');
-            const prompt = `Daftar Tugas Saya:\n${taskContext}\n\nBerikan analisis komprehensif tentang ketimpangan prioritas.`;
-            const response = await fetchGemini(prompt, "Anda adalah Executive Productivity Coach.");
+            const prompt = `Daftar Tugas:\n${taskContext}\n\nBerikan saran naratif langsung dengan tentang apa yang harus dilakukan segera tanpa tabel menggunakan bahasa awam. Jangan terlalu panjang tapi tetap padat`;
+            const response = await fetchGemini(prompt, "Anda adalah Executive Coach. Jawab dalam bentuk narasi paragraf pendek menggunakan bahasa awam, jangan gunakan tabel. Jangan terlalu panjang tapi tetap padat");
             contentArea.innerHTML = formatAIResponse(response);
         };
 
         window.downloadMatrix = () => {
-            const text = "DAFTAR TUGAS PRIORITAS - ANTI LEMBUR\n" + 
-                        tasks.map(t => `[${t.quadrant.toUpperCase()}] ${t.completed ? '[x]' : '[ ]'} ${t.title}`).join('\n');
-            window.downloadFile("Prioritas_AntiLembur.txt", text);
+            const text = tasks.map(t => `[${t.quadrant}] ${t.completed ? '[x]' : '[ ]'} ${t.title}`).join('\n');
+            window.downloadFile("Matrix_Tasks.txt", text);
         };
 
-        // --- FEATURE LOGIC (AI Calls Only) ---
+        // --- FEATURE LOGIC ---
         window.askAI = async () => {
             const input = document.getElementById('ai-input').value;
             if(!input) return;
-            const area = document.getElementById('ai-response-area');
-            const textArea = document.getElementById('ai-response-text');
-            area.classList.remove('hidden');
-            textArea.innerHTML = "Berpikir...";
-            const response = await fetchGemini(input, "Anda adalah AI Mentor Karir yang tajam.");
-            textArea.innerHTML = formatAIResponse(response);
+            document.getElementById('ai-response-area').classList.remove('hidden');
+            document.getElementById('ai-response-text').innerHTML = "Tunggu sebentar...";
+            const response = await fetchGemini(input, "Anda adalah AI Mentor Karir. Jawab dalam bentuk narasi paragraf pendek menggunakan bahasa awam, jangan gunakan tabel. Jangan terlalu panjang tapi tetap padat");
+            document.getElementById('ai-response-text').innerHTML = formatAIResponse(response);
         };
 
         window.generateScriptAI = async () => {
             const target = document.getElementById('script-target').value;
             const tone = document.getElementById('script-tone').value;
             const context = document.getElementById('script-context').value;
-            const output = document.getElementById('script-output');
-            output.innerHTML = "Generating...";
-            const prompt = `Script untuk ${target} dengan nada ${tone}. Masalah: ${context}.`;
-            const response = await fetchGemini(prompt, "Anda adalah Pakar Komunikasi Profesional.");
-            output.innerHTML = formatAIResponse(response);
+            document.getElementById('script-output').innerHTML = "Membuatkan jawaban Anda...";
+            const prompt = `Buatkan script untuk ${target} (nada: ${tone}). Masalah: ${context}. HANYA keluarkan satu scriptnya percakapan saja agar bisa langsung disalin (BUKAN SURAT).`;
+            const response = await fetchGemini(prompt, "HANYA berikan satu teks script percakapan (BUKAN SURAT) yang langsung bisa disalin. Tanpa pembukaan, tanpa penutup, tanpa basa-basi.");
+            document.getElementById('script-output').innerHTML = response;
         };
 
         window.analyzeDailyAI = async () => {
-            const display = document.getElementById('daily-ai-feedback');
-            display.innerHTML = "Mengevaluasi...";
+            document.getElementById('daily-ai-feedback').innerHTML = "Mengevaluasi performa Anda...";
             const prompt = `Refleksi: ${document.getElementById('review-win').value}`;
-            const response = await fetchGemini(prompt, "Anda adalah Mentor Produktivitas.");
-            display.innerHTML = formatAIResponse(response);
+            const response = await fetchGemini(prompt, "Berikan feedback naratif lengkap menggunakan bahasa awam, jangan gunakan tabel.");
+            document.getElementById('daily-ai-feedback').innerHTML = formatAIResponse(response);
         };
 
         window.getCareerAdvice = async () => {
-            const text = document.getElementById('career-text');
             document.getElementById('career-response').classList.remove('hidden');
-            text.innerHTML = "Menimbang resiko...";
-            const prompt = `Alasan: ${document.getElementById('adv-reason').value}`;
-            const response = await fetchGemini(prompt, "Anda adalah AI Career Strategist.");
-            text.innerHTML = formatAIResponse(response);
+            document.getElementById('career-text').innerHTML = "Merencanakan saran untuk Anda...";
+            const data = { reason: document.getElementById('adv-reason').value, pros: document.getElementById('adv-pros').value, burnout: document.getElementById('adv-burnout').value };
+            const prompt = `Analisis Karir:\nAlasan: ${data.reason}\nPros: ${data.pros}\nBurnout: ${data.burnout}/10. Berikan saran strategis naratif Jawab dalam bentuk narasi paragraf pendek menggunakan bahasa awam, jangan gunakan tabel. Jangan terlalu panjang tapi tetap lengkap.`;
+            const response = await fetchGemini(prompt, "Berikan analisis strategis dalam bentuk narasi paragraf profesional Jawab dalam bentuk narasi paragraf pendek menggunakan bahasa awam, jangan gunakan tabel. Jangan terlalu panjang tapi tetap lengkap. JANGAN gunakan tabel.");
+            document.getElementById('career-text').innerHTML = formatAIResponse(response);
         };
 
         // --- TIMER & MUSIC ---
@@ -599,10 +627,10 @@
                 btn.innerText = "PAUSE";
                 timerInterval = setInterval(() => {
                     timeLeft--;
-                    const m = Math.floor(timeLeft / 60).toString().padStart(2,'0'), s = (timeLeft % 60).toString().padStart(2,'0');
+                    const m = Math.floor(timeLeft/60).toString().padStart(2,'0'), s = (timeLeft%60).toString().padStart(2,'0');
                     document.getElementById('timer-display').innerText = `${m}:${s}`;
                     document.getElementById('timer-progress').style.width = `${((25*60-timeLeft)/(25*60))*100}%`;
-                    if(timeLeft <= 0) { clearInterval(timerInterval); alert("Waktu Fokus Selesai!"); resetTimer(); }
+                    if(timeLeft <= 0) { clearInterval(timerInterval); alert("Selesai!"); resetTimer(); }
                 }, 1000);
             }
         };
@@ -612,26 +640,18 @@
             { title: "Neon Lofi Study", label: "Lofi", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
             { title: "Deep Space Ambient", label: "Nature", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
             { title: "Synthwave Focus", label: "Synth", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
-            { title: "Coffee Shop Jazz", label: "Jazz", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
-            { title: "Cyberpunk Hacker Mode", label: "Dark Synth", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
-            { title: "Rainy Night Focus", label: "Ambient", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3" },
-            { title: "Piano Calm Flow", label: "Classical", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3" },
-            { title: "Zen Garden Peace", label: "Healing", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" }
+            { title: "Coffee Shop Jazz", label: "Jazz", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" }
         ];
         let currentTrackIdx = null;
         const audio = document.getElementById('audio-player');
-        
         window.playTrack = (idx) => {
             document.querySelectorAll('.track-btn').forEach(b => b.classList.remove('track-active'));
             document.getElementById(`track-${idx}`).classList.add('track-active');
-            currentTrackIdx = idx;
-            audio.src = tracks[idx].url;
-            audio.play();
+            currentTrackIdx = idx; audio.src = tracks[idx].url; audio.play();
             document.getElementById('music-main-btn').innerText = "⏸";
             document.getElementById('current-track-title').innerText = tracks[idx].title;
             document.getElementById('current-track-label').innerText = tracks[idx].label + " Station";
         };
-
         window.toggleMusicPlayback = () => {
             if(currentTrackIdx === null) return playTrack(0);
             if(audio.paused) { audio.play(); document.getElementById('music-main-btn').innerText = "⏸"; }
@@ -640,10 +660,22 @@
 
         window.openTaskModal = () => document.getElementById('task-modal').classList.remove('hidden');
         window.closeTaskModal = () => document.getElementById('task-modal').classList.add('hidden');
+        window.saveInputs = saveInputs;
 
         window.onload = () => {
+            loadFromLocal(); loadInputs(); renderTasks();
             const container = document.getElementById('playlist-container');
             container.innerHTML = tracks.map((t, i) => `<button onclick="playTrack(${i})" id="track-${i}" class="track-btn w-full p-3 border border-gray-800 text-left text-sm flex justify-between items-center"><span>${t.title}</span><span class="text-[10px] opacity-50">${t.label}</span></button>`).join('');
+        };
+
+        window.copyScript = () => {
+            const text = document.getElementById('script-output').innerText;
+            const el = document.createElement('textarea');
+            el.value = text; document.body.appendChild(el); el.select();
+            document.execCommand('copy'); document.body.removeChild(el);
+            const btn = document.querySelector('button[onclick="copyScript()"]');
+            const original = btn.innerText; btn.innerText = "COPIED!";
+            setTimeout(() => btn.innerText = original, 2000);
         };
     </script>
 </body>
